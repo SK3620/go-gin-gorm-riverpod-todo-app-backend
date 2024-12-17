@@ -28,9 +28,10 @@ func main() {
 	todoController := controllers.NewTodoController(todoService)
 
 	r := gin.Default()
-	r.GET("/todos", todoController.FindAll)
-	r.POST("/todos", todoController.Create)
-	r.PUT("/todos/:id", todoController.Update)
-	r.DELETE("/todos/:id", todoController.Delete)
-	r.Run()
+	todoRouter := r.Group("/todos")
+	todoRouter.GET("", todoController.FindAll)
+	todoRouter.POST("", todoController.Create)
+	todoRouter.PUT("/:id", todoController.Update)
+	todoRouter.DELETE("/:id", todoController.Delete)
+	r.Run("localhost:8080")
 }
