@@ -1,6 +1,6 @@
 package models
 
-type ToDo struct {
+type Todo struct {
 	ID uint
 	Title string
 	IsCompleted bool

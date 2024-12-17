@@ -8,7 +8,7 @@ import (
 
 func main() {
 	// サンプルデータを作成
-	todos := []models.ToDo{
+	todos := []models.Todo{
 		{ID: 1, Title: "タイトル１", IsCompleted: false},
 		{ID: 2, Title: "タイトル２", IsCompleted: true},
 		{ID: 3, Title: "タイトル３", IsCompleted: false},
