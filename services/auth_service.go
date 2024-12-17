@@ -9,6 +9,7 @@ import (
 
 type IAuthService interface {
 	SignUp(username string, email string, password string) error
+	Login(email string, password string) (*string, error)
 }
 
 type AuthService struct {
@@ -20,9 +21,9 @@ func NewAuthService(respository repositories.IAuthRepository) IAuthService {
 }
 
 func (s *AuthService) SignUp(username string, email string, password string) error {
-	hashedPassword, error := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if error != nil {
-		return error
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
 	}
 
 	user := models.User{
@@ -31,4 +32,18 @@ func (s *AuthService) SignUp(username string, email string, password string) err
 		Password: string(hashedPassword),
 	}
 	return s.repository.CreateUser(user)
+}
+
+func (s *AuthService) Login(email string, password string) (*string, error) {
+	foundUser, err := s.repository.FindUser(email)
+	if err != nil {
+		return nil,  err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
+	if  err != nil {
+		return nil,  err
+	}
+
+	return &foundUser.Email, nil
 }

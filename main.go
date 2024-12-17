@@ -36,6 +36,7 @@ func main() {
 	todoRouter := r.Group("/todos")
 
 	authRouter.POST("/sign_up", authController.SignUp)
+	authRouter.POST("/login", authController.Login)
 
 	todoRouter.GET("", todoController.FindAll)
 	todoRouter.POST("", todoController.Create)
