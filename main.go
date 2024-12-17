@@ -23,7 +23,6 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/todos", todoController.FindAll)
-	r.GET("/todos/:id", todoController.FindById)
 	r.POST("/todos", todoController.Create)
 	r.PUT("/todos/:id", todoController.Update)
 	r.DELETE("/todos/:id", todoController.Delete)

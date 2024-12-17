@@ -11,7 +11,6 @@ import (
 
 type ITodoController interface {
 	FindAll(ctx *gin.Context)
-	FindById(ctx *gin.Context)
 	Create(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
@@ -32,26 +31,6 @@ func (c *TodoController) FindAll(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"data": todos})
-}
-
-func (c *TodoController) FindById(ctx *gin.Context) {
-	todoId, error := strconv.ParseInt(ctx.Param("id"), 10, 64)
-	if error != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id"})
-		return
-	}
-
-	todo, error := c.service.FindById(uint(todoId))
-	if error != nil {
-		if error.Error() == "Todo not found" {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": error.Error()})
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unexpected error"})
-		return
-	}
-	
-	ctx.JSON(http.StatusOK, gin.H{"data": todo})
 }
 
 func (c *TodoController) Create(ctx *gin.Context) {
