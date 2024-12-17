@@ -27,8 +27,16 @@ func main() {
 	todoService := services.NewTodoService(todoRepository)
 	todoController := controllers.NewTodoController(todoService)
 
+	authRepository := repositories.NewAuthRepository(db)
+	authService := services.NewAuthService(authRepository)
+	authController := controllers.NewAuthController(authService)
+
 	r := gin.Default()
+	authRouter := r.Group("/auth")
 	todoRouter := r.Group("/todos")
+
+	authRouter.POST("/sign_up", authController.Signup)
+
 	todoRouter.GET("", todoController.FindAll)
 	todoRouter.POST("", todoController.Create)
 	todoRouter.PUT("/:id", todoController.Update)

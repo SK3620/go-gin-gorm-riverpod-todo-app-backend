@@ -9,7 +9,7 @@ func main() {
 	infra.Initialize()
 	db := infra.SetupDB()
 
-	if error := db.AutoMigrate(&models.Todo{}); error != nil {
+	if error := db.AutoMigrate(&models.Todo{}, &models.User{}); error != nil {
 		panic("Failed to migrate database")
 	}
 }
