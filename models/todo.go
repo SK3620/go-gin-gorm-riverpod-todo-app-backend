@@ -1,7 +1,9 @@
 package models
 
+import "gorm.io/gorm"
+
 type Todo struct {
-	ID uint
-	Title string
-	IsCompleted bool
+	gorm.Model
+	Title string `gorm:"not null"`
+	IsCompleted bool `gorm:"not null;default:false"`
 }
