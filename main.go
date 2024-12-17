@@ -2,6 +2,7 @@ package main
 
 import (
 	"go-gin-gorm-riverpod-todo-app/controllers"
+	"go-gin-gorm-riverpod-todo-app/infra"
 	"go-gin-gorm-riverpod-todo-app/models"
 	"go-gin-gorm-riverpod-todo-app/repositories"
 	"go-gin-gorm-riverpod-todo-app/services"
@@ -10,6 +11,8 @@ import (
 )
 
 func main() {
+	infra.Initialize()
+	
 	// サンプルデータを作成
 	todos := []models.Todo{
 		{ID: 1, Title: "タイトル１", IsCompleted: false},
