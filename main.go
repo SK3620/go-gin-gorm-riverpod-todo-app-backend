@@ -1,7 +1,10 @@
 package main
 
 import (
+	"go-gin-gorm-riverpod-todo-app/controllers"
 	"go-gin-gorm-riverpod-todo-app/models"
+	"go-gin-gorm-riverpod-todo-app/repositories"
+	"go-gin-gorm-riverpod-todo-app/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,11 +17,15 @@ func main() {
 		{ID: 3, Title: "タイトル３", IsCompleted: false},
 	}
 
+	todoRepository := repositories.NewTodoMemoryRepository(todos)
+	todoService := services.NewTodoService(todoRepository)
+	todoController := controllers.NewTodoController(todoService)
+
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run() // 0.0.0.0:8080 でサーバーを立てます。
+	r.GET("/todos", todoController.FindAll)
+	r.GET("/todos/:id", todoController.FindById)
+	r.POST("/todos", todoController.Create)
+	r.PUT("/todos/:id", todoController.Update)
+	r.DELETE("/todos/:id", todoController.Delete)
+	r.Run()
 }
