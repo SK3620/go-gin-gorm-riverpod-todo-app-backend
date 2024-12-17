@@ -3,8 +3,9 @@ package repositories
 import (
 	"errors"
 	"go-gin-gorm-riverpod-todo-app/models"
-)
 
+	"gorm.io/gorm"
+)
 
 type ITodoRepository interface {
 	FindAll() (*[]models.Todo, error)
@@ -58,5 +59,65 @@ func (r *TodoMemoryRepository) Delete(todoId uint) error {
 			return nil
 		}
 	}
-	return errors.New("Item not found")
+	return errors.New("Todo not found")
+}
+
+// ================================================================================================================================================================
+
+type TodoRepository struct {
+	db *gorm.DB
+}
+
+func NewTodoRepository(db *gorm.DB) ITodoRepository {
+	return &TodoRepository{db: db}
+}
+
+func (r *TodoRepository) Create(newTodo models.Todo) (*models.Todo, error) {
+	result := r.db.Create(&newTodo)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &newTodo, nil
+}
+
+func (r *TodoRepository) Delete(todoId uint) error {
+	deleteTodo, error := r.FindById(todoId)
+	if error != nil {
+		return error
+	}
+
+	result := r.db.Delete(&deleteTodo)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (r *TodoRepository) FindAll() (*[]models.Todo, error) {
+	var todos []models.Todo
+	result := r.db.Find(&todos)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &todos, nil
+}
+
+func (r *TodoRepository) FindById(todoId uint) (*models.Todo, error) {
+	var todo models.Todo
+	result := r.db.First(&todo, todoId)
+	if result.Error != nil {
+		if result.Error.Error() == "record not found" {
+			return nil, errors.New("Todo not found")
+		}
+		return nil, result.Error
+	}
+	return &todo, nil
+}
+
+func (r *TodoRepository) Update(updateTodo models.Todo) (*models.Todo, error) {
+	result := r.db.Save(&updateTodo)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &updateTodo, nil
 }
