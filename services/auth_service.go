@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"go-gin-gorm-riverpod-todo-app/models"
 	"go-gin-gorm-riverpod-todo-app/repositories"
 	"os"
@@ -13,6 +14,7 @@ import (
 type IAuthService interface {
 	SignUp(username string, email string, password string) error
 	Login(email string, password string) (*string, error)
+	GetUserFromToken(tokenString string) (*models.User, error)
 }
 
 type AuthService struct {
@@ -63,10 +65,33 @@ func CreateToken(userId uint, email string) (*string, error) {
 		"exp": time.Now().Add(time.Hour).Unix(),
 	})
 
-	// 秘密鍵を使用して著名を行う
 	tokenString, error := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 	if error != nil {
 		return nil, error
 	}
 	return &tokenString, nil
+}
+
+func (s *AuthService) GetUserFromToken(tokenString string) (*models.User, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var user *models.User
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		if float64(time.Now().Unix()) > claims["exp"].(float64) {
+			return nil, jwt.ErrTokenExpired
+		}
+		user, err = s.repository.FindUser(claims["email"].(string))
+		if err != nil {
+			return nil, err
+		}
+	}
+	return user, nil
 }
