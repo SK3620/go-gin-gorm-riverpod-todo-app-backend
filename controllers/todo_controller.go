@@ -130,5 +130,5 @@ func (c *TodoController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Status(http.StatusOK)
+	ctx.JSON(http.StatusOK, gin.H{"data": nil})
 }
