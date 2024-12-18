@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"go-gin-gorm-riverpod-todo-app/dto"
+	"go-gin-gorm-riverpod-todo-app/models"
 	"go-gin-gorm-riverpod-todo-app/services"
 	"net/http"
 	"strconv"
@@ -25,7 +26,15 @@ func NewTodoController(service services.ITodoService) ITodoController {
 }
 
 func (c *TodoController) FindAll(ctx *gin.Context) {
-	todos, err := c.service.FindAll()
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	userId := user.(*models.User).ID
+
+	todos, err := c.service.FindAll(userId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unexpected error"})
 		return
@@ -34,13 +43,21 @@ func (c *TodoController) FindAll(ctx *gin.Context) {
 }
 
 func (c *TodoController) Create(ctx *gin.Context) {
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	userId := user.(*models.User).ID
+
 	var input dto.CreateToDoInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	newTodo, err := c.service.Create(input)
+	newTodo, err := c.service.Create(input, userId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -50,6 +67,14 @@ func (c *TodoController) Create(ctx *gin.Context) {
 }
 
 func (c *TodoController) Update(ctx *gin.Context) {
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	userId := user.(*models.User).ID
+
 	todoId, error := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id"})
@@ -62,7 +87,7 @@ func (c *TodoController) Update(ctx *gin.Context) {
 		return
 	}
 
-	updatedTodo, error := c.service.Update(uint(todoId), input)
+	updatedTodo, error := c.service.Update(uint(todoId), userId, input)
 	if error != nil {
 		if error.Error() == "Todo not found" {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": error.Error()})
@@ -77,13 +102,21 @@ func (c *TodoController) Update(ctx *gin.Context) {
 }
 
 func (c *TodoController) Delete(ctx *gin.Context) {
+	user, exists := ctx.Get("user")
+	if !exists {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	userId := user.(*models.User).ID
+
 	todoId, error := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id"})
 		return
 	}
 
-	error = c.service.Delete(uint(todoId))
+	error = c.service.Delete(uint(todoId), userId)
 	if error != nil {
 		if error.Error() == "Item not found" {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": error.Error()})

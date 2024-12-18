@@ -3,6 +3,7 @@ package main
 import (
 	"go-gin-gorm-riverpod-todo-app/controllers"
 	"go-gin-gorm-riverpod-todo-app/infra"
+	"go-gin-gorm-riverpod-todo-app/middlwares"
 
 	// "go-gin-gorm-riverpod-todo-app/models"
 	"go-gin-gorm-riverpod-todo-app/repositories"
@@ -33,14 +34,14 @@ func main() {
 
 	r := gin.Default()
 	authRouter := r.Group("/auth")
-	todoRouter := r.Group("/todos")
+	todoRouterWithAuth := r.Group("/todos", middlwares.AuthMiddlware(authService)) // カスタムミドルウェア追加
 
 	authRouter.POST("/sign_up", authController.SignUp)
 	authRouter.POST("/login", authController.Login)
 
-	todoRouter.GET("", todoController.FindAll)
-	todoRouter.POST("", todoController.Create)
-	todoRouter.PUT("/:id", todoController.Update)
-	todoRouter.DELETE("/:id", todoController.Delete)
+	todoRouterWithAuth.GET("", todoController.FindAll)
+	todoRouterWithAuth.POST("", todoController.Create)
+	todoRouterWithAuth.PUT("/:id", todoController.Update)
+	todoRouterWithAuth.DELETE("/:id", todoController.Delete)
 	r.Run("localhost:8080")
 }

@@ -7,11 +7,11 @@ import (
 )
 
 type ITodoService interface {
-	FindAll() (*[]models.Todo, error)
-	FindById(todoId uint) (*models.Todo, error)
-	Create(createTodoInput dto.CreateToDoInput) (*models.Todo, error)
-	Update(todoId uint, updateItemInput dto.UpdateTodoInput) (*models.Todo, error)
-	Delete(todoId uint) error
+	FindAll(userId uint) (*[]models.Todo, error)
+	FindById(todoId uint, userId uint) (*models.Todo, error)
+	Create(createTodoInput dto.CreateToDoInput, userId uint) (*models.Todo, error)
+	Update(todoId uint, userId uint, updateItemInput dto.UpdateTodoInput) (*models.Todo, error)
+	Delete(todoId uint, userId uint) error
 }
 
 type TodoService struct {
@@ -22,24 +22,25 @@ func NewTodoService(repository repositories.ITodoRepository) ITodoService {
 	return &TodoService{repository: repository}
 }
 
-func (s *TodoService) FindAll() (*[]models.Todo, error) {
-	return s.repository.FindAll()
+func (s *TodoService) FindAll(userId uint) (*[]models.Todo, error) {
+	return s.repository.FindAll(userId)
 }
 
-func (s *TodoService) FindById(todoId uint) (*models.Todo, error) {
-	return s.repository.FindById(todoId)
+func (s *TodoService) FindById(todoId uint, userId uint) (*models.Todo, error) {
+	return s.repository.FindById(todoId, userId)
 }
 
-func (s *TodoService) Create(createTodoInput dto.CreateToDoInput) (*models.Todo, error) {
+func (s *TodoService) Create(createTodoInput dto.CreateToDoInput, userId uint) (*models.Todo, error) {
 	newTodo := models.Todo{
 		Title: createTodoInput.Title,
 		IsCompleted: false,
+		UserID: userId,
 	}
 	return s.repository.Create(newTodo)
 }
 
-func (s *TodoService) Update(todoId uint, updateTodoInput dto.UpdateTodoInput) (*models.Todo, error) {
-	targetItem, error := s.FindById(todoId)
+func (s *TodoService) Update(todoId uint, userId uint, updateTodoInput dto.UpdateTodoInput) (*models.Todo, error) {
+	targetItem, error := s.FindById(todoId, userId)
 	if error != nil {
 		return nil, error
 	}
@@ -53,6 +54,6 @@ func (s *TodoService) Update(todoId uint, updateTodoInput dto.UpdateTodoInput) (
 	return s.repository.Update(*targetItem)
 }
 
-func (s *TodoService) Delete(todoId uint) error {
-	return s.repository.Delete(todoId)
+func (s *TodoService) Delete(todoId uint, userId uint) error {
+	return s.repository.Delete(todoId, userId)
 }

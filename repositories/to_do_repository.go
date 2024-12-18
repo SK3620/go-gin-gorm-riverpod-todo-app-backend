@@ -8,11 +8,11 @@ import (
 )
 
 type ITodoRepository interface {
-	FindAll() (*[]models.Todo, error)
-	FindById(todoId uint) (*models.Todo, error)
+	FindAll(userId uint) (*[]models.Todo, error)
+	FindById(todoId uint, userId uint) (*models.Todo, error)
 	Create(newTodo models.Todo) (*models.Todo, error)
 	Update(updateTodo models.Todo) (*models.Todo, error)
-	Delete(todoId uint) error
+	Delete(todoId uint, userId uint) error
 }
 
 type TodoMemoryRepository struct {
@@ -23,11 +23,11 @@ func NewTodoMemoryRepository(todos []models.Todo) ITodoRepository {
 	return &TodoMemoryRepository{todos: todos}
 }
 
-func (r *TodoMemoryRepository) FindAll() (*[]models.Todo, error) {
+func (r *TodoMemoryRepository) FindAll(userId uint) (*[]models.Todo, error) {
 	return &r.todos, nil
 }
 
-func (r *TodoMemoryRepository) FindById(todoId uint) (*models.Todo, error) {
+func (r *TodoMemoryRepository) FindById(todoId uint, userId uint) (*models.Todo, error) {
 	for _, v := range r.todos {
 		if v.ID == todoId {
 			return &v, nil
@@ -52,7 +52,7 @@ func (r *TodoMemoryRepository) Update(updateTodo models.Todo) (*models.Todo, err
 	return nil, errors.New("Unexpected error")
 }
 
-func (r *TodoMemoryRepository) Delete(todoId uint) error {
+func (r *TodoMemoryRepository) Delete(todoId uint, userId uint) error {
 	for i, v := range r.todos {
 		if v.ID == todoId {
 			r.todos = append(r.todos[:i], r.todos[i+1:]...)
@@ -80,8 +80,8 @@ func (r *TodoRepository) Create(newTodo models.Todo) (*models.Todo, error) {
 	return &newTodo, nil
 }
 
-func (r *TodoRepository) Delete(todoId uint) error {
-	deleteTodo, error := r.FindById(todoId)
+func (r *TodoRepository) Delete(todoId uint, userId uint) error {
+	deleteTodo, error := r.FindById(todoId, userId)
 	if error != nil {
 		return error
 	}
@@ -93,18 +93,18 @@ func (r *TodoRepository) Delete(todoId uint) error {
 	return nil
 }
 
-func (r *TodoRepository) FindAll() (*[]models.Todo, error) {
+func (r *TodoRepository) FindAll(userId uint) (*[]models.Todo, error) {
 	var todos []models.Todo
-	result := r.db.Find(&todos)
+	result := r.db.Find(&todos, "user_id = ?", userId)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return &todos, nil
 }
 
-func (r *TodoRepository) FindById(todoId uint) (*models.Todo, error) {
+func (r *TodoRepository) FindById(todoId uint, userId uint) (*models.Todo, error) {
 	var todo models.Todo
-	result := r.db.First(&todo, todoId)
+	result := r.db.First(&todo, "id = ? AND user_id = ?", todoId, userId)
 	if result.Error != nil {
 		if result.Error.Error() == "record not found" {
 			return nil, errors.New("Todo not found")
