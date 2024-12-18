@@ -98,7 +98,6 @@ func (c *TodoController) Update(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"data": updatedTodo})
-
 }
 
 func (c *TodoController) Delete(ctx *gin.Context) {
