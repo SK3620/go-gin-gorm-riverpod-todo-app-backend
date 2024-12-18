@@ -40,7 +40,11 @@ func (c *TodoController) FindAll(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": todos})
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"todos": todos,
+		},
+	})
 }
 
 func (c *TodoController) Create(ctx *gin.Context) {
