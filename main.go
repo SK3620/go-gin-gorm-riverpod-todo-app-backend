@@ -34,7 +34,7 @@ func main() {
 
 	r := gin.Default()
 	authRouter := r.Group("/auth")
-	todoRouterWithAuth := r.Group("/todos", middlwares.AuthMiddlware(authService)) // カスタムミドルウェア追加
+	todoRouterWithAuth := r.Group("/todos", middlwares.AuthMiddlware(authService))
 
 	authRouter.POST("/sign_up", authController.SignUp)
 	authRouter.POST("/login", authController.Login)
