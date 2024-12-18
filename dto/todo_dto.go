@@ -6,5 +6,5 @@ type CreateToDoInput struct {
 
 type UpdateTodoInput struct {
 	Title *string `json:"title" binding:"omitnil"`
-	IsCompleted *bool `json:"isCompleted" binding:"omitnil"`
+	IsCompleted *bool `json:"is_completed" binding:"omitnil"`
 }
