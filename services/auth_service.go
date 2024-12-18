@@ -3,7 +3,10 @@ package services
 import (
 	"go-gin-gorm-riverpod-todo-app/models"
 	"go-gin-gorm-riverpod-todo-app/repositories"
+	"os"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -45,5 +48,25 @@ func (s *AuthService) Login(email string, password string) (*string, error) {
 		return nil,  err
 	}
 
-	return &foundUser.Email, nil
+	token, err := CreateToken(foundUser.ID, foundUser.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
+}
+
+func CreateToken(userId uint, email string) (*string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": userId,
+		"email": email,
+		"exp": time.Now().Add(time.Hour).Unix(),
+	})
+
+	// 秘密鍵を使用して著名を行う
+	tokenString, error := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	if error != nil {
+		return nil, error
+	}
+	return &tokenString, nil
 }
