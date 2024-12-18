@@ -28,13 +28,20 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	err := c.service.SignUp(input.UserName, input.Email, input.Password)
+	token, err := c.service.SignUp(input.Usermame, input.Email, input.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
 
-	ctx.Status(http.StatusCreated)
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"username": input.Usermame,
+			"email":    input.Email,
+			"password": input.Password,
+			"jwt_token": token,
+		},
+	})
 }
 
 
@@ -54,5 +61,13 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"token": token})
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"username": "",
+			"email":    input.Email,
+			"password": input.Password,
+			"jwt_token": token,
+		},
+	})
 }

@@ -12,7 +12,7 @@ import (
 )
 
 type IAuthService interface {
-	SignUp(username string, email string, password string) error
+	SignUp(username string, email string, password string) (*string, error)
 	Login(email string, password string) (*string, error)
 	GetUserFromToken(tokenString string) (*models.User, error)
 }
@@ -25,10 +25,10 @@ func NewAuthService(respository repositories.IAuthRepository) IAuthService {
 	return &AuthService{repository: respository}
 }
 
-func (s *AuthService) SignUp(username string, email string, password string) error {
+func (s *AuthService) SignUp(username string, email string, password string) (*string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	user := models.User{
@@ -36,7 +36,22 @@ func (s *AuthService) SignUp(username string, email string, password string) err
 		Email: email,
 		Password: string(hashedPassword),
 	}
-	return s.repository.CreateUser(user)
+	createUserErr := s.repository.CreateUser(user)
+	if createUserErr != nil {
+		return nil, createUserErr
+	}
+
+	foundUser, err := s.repository.FindUser(email)
+	if err != nil {
+		return nil,  err
+	}
+
+	token, err := CreateToken(foundUser.ID, foundUser.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	return token,  nil
 }
 
 func (s *AuthService) Login(email string, password string) (*string, error) {
