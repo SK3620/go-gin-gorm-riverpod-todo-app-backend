@@ -10,12 +10,10 @@ import (
 	"go-gin-gorm-riverpod-todo-app/services"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func main() {
-	infra.Initialize()
-	db := infra.SetupDB()
-	
+func setupRouter(db *gorm.DB) *gin.Engine {
 	// // サンプルデータを作成
 	// todos := []models.Todo{
 	// 	{ID: 1, Title: "タイトル１", IsCompleted: false},
@@ -43,5 +41,15 @@ func main() {
 	todoRouterWithAuth.POST("", todoController.Create)
 	todoRouterWithAuth.PUT("/:id", todoController.Update)
 	todoRouterWithAuth.DELETE("/:id", todoController.Delete)
+
+	return r
+}
+
+func main() {
+	infra.Initialize()
+	db := infra.SetupDB()
+
+	r := setupRouter(db)
+	
 	r.Run("localhost:8080")
 }
