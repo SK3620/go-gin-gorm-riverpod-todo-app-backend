@@ -1,0 +1,136 @@
+
+Hoge interface（型）内で宣言されたメソッドと名前・引数・戻り値の型すべて一致している場合、
+その（それらの）構造体は、Hogeインターフェースを実装している（満たしている）と自動で見なされます。
+
+Car型
+type Car struct {
+	color string
+}
+
+func (c Car) Accelerate() {
+	fmt.Println("車が加速する")
+}
+
+func (c Car) Brake() {
+	fmt.Println("車がブレーキをかける")
+}
+
+Bike型
+type Bike struct {
+	color string
+}
+
+func (b Bike) Accelerate() {
+	fmt.Println("バイクが加速する")
+}
+
+func (b Bike) Brake() {
+	fmt.Println("バイクがブレーキをかける")
+}
+
+それぞれの構造体には、Accelerate と Brake メソッドが定義されています。この2つのメソッドは、Vehicle 型で宣言されたメソッドと名前・引数・戻り値の型すべて一致しているため、これらの構造体は Vehicle インターフェースを実装している（満たしている）と見なされます。
+
+
+
+interface型は以下の2つの情報を持つ「2ワードのペア」として実装されています：
+
+値の型情報（Type Descriptor）：実際の型（例：structやintなど）。そのinterfaceに代入された具体的な型。
+値へのポインタ（Value Pointer）：実際のデータが格納されているメモリ位置。その具体的な型の実体（値 or ポインタ）。
+この構造によって、interface型はどのような型でも格納できる柔軟性を持ちます。
+
+ interface は上記のように型情報と値情報をフィールドに持った構造体になります。これらの型情報と値情報は interface を受ける変数に代入されることで、動的に変化する（どんな型でも格納できる柔軟性）
+
+interface型の内部構造（型情報＋値のポインタ）により、関数内で実際のデータを操作可能です。このため、ポインタ渡しをする必要はありません。
+*/
+
+/*
+Mammal型の変数
+
+type Mammal interface {
+    GetAge() int
+}
+
+type Human struct {
+    Age int
+}
+
+func (h *Human) GetAge() int {
+    return h.Age
+}
+
+
+①
+func Foo(human Mammal) {
+    _ = human.GetAge() // OK
+}
+
+②
+func Foo(human *Mammal) {
+	_ = human.GetAge()  // コンパイルエラー
+}
+
+
+Mammal型の変数（Mammalそのものを指す）この時点でMammal型はメソッドを呼び出せます（代入された具体的な値の型情報と値情報を持っているから）→ すなわち代入される具体的な値は自動で参照型として扱われる。
++----------------------+
+| 型情報: *Human        | ← どの型が実装されているか
+| 値情報: &Human{...}   | ← その型の実際のデータ（メモリ上のアドレス）
++----------------------+
+
+*Mammal型の変数　この時点で
++--------------------+
+| ポインタ: → Mammal  | Mammalインターフェースそのもののアドレス（あくまで場所を指し示している）
+|    +--------------------+
+|    | 型情報: *Human      |
+|    | 値情報: &Human{}    |
+|    +--------------------+
+*Mammal型は、あくまでMammalの構造体のメモリ上のアドレスを指し示しているだけなので、そのままではメソッドを呼び出せません。（デリファレンスが必要）
+*Mammalからメソッドを呼び出すには、デリファレンスしてMammal型にする必要があります。
+
+
+参考サイト↓
+https://qiita.com/ymmy02/items/b4b38a57c024510c5210
+
+
+
+
+参照型の代表例
+スライス ([]T)
+
+スライスは配列を指すポインタを含んでいるため、参照型です。
+関数に渡すと、スライスの構造体はコピーされますが、参照先のデータは共有されます。
+マップ (map[K]V)
+
+マップは内部的に参照型で、データを共有します。
+関数に渡しても同じマップを参照するため、変更が反映されます。
+go
+コードをコピーする
+func modifyMap(m map[string]int) {
+    m["key"] = 100
+}
+
+func main() {
+    m := map[string]int{"key": 1}
+    modifyMap(m)
+    fmt.Println(m["key"]) // 100 と表示される
+}
+チャネル (chan T)
+
+チャネルも参照型です。複数のゴルーチン間でデータをやり取りするための仕組みです。
+ポインタ (*T)
+
+ポインタはデータのアドレスを保持し、参照先の値を共有します。
+関数に渡すと元の値を変更できます。
+go
+コードをコピーする
+func modifyPointer(p *int) {
+    *p = 10
+}
+
+func main() {
+    value := 5
+    modifyPointer(&value)
+    fmt.Println(value) // 10 と表示される
+}
+インターフェース
+
+インターフェースも参照型です。内部的には、実体のデータとその型情報への参照を保持しています。
