@@ -7,7 +7,7 @@ import (
 )
 
 func Initialize() {
-	error := godotenv.Load()
+	error := godotenv.Load() // 引数にファイル名を渡す（省略するとデフォルトで.envファイルを読み込み）
 	if error != nil {
 		log.Fatal("Error loading .env file")
 	}

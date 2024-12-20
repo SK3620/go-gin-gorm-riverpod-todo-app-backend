@@ -22,16 +22,23 @@ type TodoController struct {
 }
 
 func NewTodoController(service services.ITodoService) ITodoController {
+	// ITodoServiceは代入される具体的な値の型情報とポインタ情報を持つ
+
+	// TodoController構造体はITodoControllerインターフェースを満たしており、ITodoServiceは具体的な値の型情報とポインタ情報を持つ
 	return &TodoController{service: service}
 }
 
+// ===== TodoController構造体がITodoControllerインターフェースを満たすようにインターフェースに定義されたメソッドを実装する =====
+
+// 全件取得
 func (c *TodoController) FindAll(ctx *gin.Context) {
-	user, exists := ctx.Get("user")
+	user, exists := ctx.Get("user") // AuthMiddlewareにてSet()で設定した"user"キーで値を取り出す
 	if !exists {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
+	// userはany型のため、型アサーションを行う
 	userId := user.(*models.User).ID
 
 	todos, err := c.service.FindAll(userId)
@@ -40,6 +47,7 @@ func (c *TodoController) FindAll(ctx *gin.Context) {
 		return
 	}
 
+	// ネスト化したjsonレスポンスデータを送る
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": gin.H{
 			"todos": todos,
@@ -47,16 +55,20 @@ func (c *TodoController) FindAll(ctx *gin.Context) {
 	})
 }
 
+// 新規作成
 func (c *TodoController) Create(ctx *gin.Context) {
-	user, exists := ctx.Get("user")
+	user, exists := ctx.Get("user") // AuthMiddlewareにてSet()で設定した"user"キーで値を取り出す
 	if !exists {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
+	// userはany型のため、型アサーションを行う
 	userId := user.(*models.User).ID
 
+	// リクエストデータを受け取る変数を用意
 	var input dto.CreateToDoInput
+	// リクエストデータをinput変数にバインド ここでリクエストデータのバリデーションが行われる
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -72,12 +84,13 @@ func (c *TodoController) Create(ctx *gin.Context) {
 }
 
 func (c *TodoController) Update(ctx *gin.Context) {
-	user, exists := ctx.Get("user")
+	user, exists := ctx.Get("user") // AuthMiddlewareにてSet()で設定した"user"キーで値を取り出す
 	if !exists {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
+	// userはany型のため、型アサーションを行う
 	userId := user.(*models.User).ID
 
 	todoId, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
@@ -86,7 +99,9 @@ func (c *TodoController) Update(ctx *gin.Context) {
 		return
 	}
 
+	// リクエストデータを受け取る変数を用意
 	var input dto.UpdateTodoInput
+	// リクエストデータをinput変数にバインド ここでリクエストデータのバリデーションが行われる
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -106,12 +121,13 @@ func (c *TodoController) Update(ctx *gin.Context) {
 }
 
 func (c *TodoController) Delete(ctx *gin.Context) {
-	user, exists := ctx.Get("user")
+	user, exists := ctx.Get("user") // AuthMiddlewareにてSet()で設定した"user"キーで値を取り出す
 	if !exists {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
+	// userはany型のため、型アサーションを行う
 	userId := user.(*models.User).ID
 
 	todoId, error := strconv.ParseInt(ctx.Param("id"), 10, 64)

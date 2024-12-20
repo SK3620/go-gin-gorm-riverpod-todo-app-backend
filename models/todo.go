@@ -16,6 +16,6 @@ type BasicModel struct {
 type Todo struct {
     BasicModel
     Title       string `gorm:"not null" json:"title"`
-    IsCompleted bool   `gorm:"not null;default:false" json:"is_completed"`
-    UserID      uint   `gorm:"not null" json:"user_id"`
+    IsCompleted bool   `gorm:"not null;default:false" json:"is_completed"` // 複数の制約はセミコロンを使用
+    UserID      uint   `gorm:"not null" json:"user_id"` // リレーション設定 外部キーとして設定 （1対多）
 }

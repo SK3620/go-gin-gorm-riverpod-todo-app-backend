@@ -21,8 +21,12 @@ func NewAuthController(service services.IAuthService) IAuthController {
 	return &AuthController{service: service}
 }
 
+// サインアップ
 func (c *AuthController) SignUp(ctx *gin.Context) {
+	// リクエストデータを格納する変数を用意
 	var input dto.SignUpInput
+
+	 // リクエストデータをinput変数にバインド ここでリクエストデータのバリデーションが行わる
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -34,19 +38,23 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		return
 	}
 
+	// ネスト化したjsonレスポンスデータを返す
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": gin.H{
 			"username": input.Usermame,
 			"email":    input.Email,
 			"password": input.Password,
-			"jwt_token": token,
+			"jwt_token": token, // 生成したJWTToken
 		},
 	})
 }
 
-
+// ログイン
 func (c *AuthController) Login(ctx *gin.Context) {
+	// リクエストデータを格納する変数を用意
 	var input dto.LoginInput
+
+	// リクエストデータをinput変数にバインド ここでリクエストデータのバリデーションが行わる
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -62,12 +70,13 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		return
 	}
 
+	// ネスト化したjsonレスポンスデータを返す
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": gin.H{
 			"username": "",
 			"email":    input.Email,
 			"password": input.Password,
-			"jwt_token": token,
+			"jwt_token": token, // 生成したJWTToken
 		},
 	})
 }
