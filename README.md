@@ -2,9 +2,15 @@
 
 Go＆Riverpod初心者が作る Go ✖️ Flutter（Riverpod）を使用した簡易的なToDoアプリです。（JWT認証あり）
 
+## 開発背景
+
+前職では、モバイル側とバックエンド側が連携したシステムの開発が多く、バックエンドにも少しでも知見のあるモバイルエンジニアはチーム全体の課題解決力を強化できることを学びました。また、モバイルエンジニアとしてのキャリアを積み上げていく過程において、Flutterは切っても切り離せない存在になってきていると感じました。
+
+そのため、最近流行りのGo言語とFlutter（Riverpod）の勉強として、ToDoアプリを作成してみました。
+
 ## 作成過程
 
-学習備忘録として作成過程を記事にしました。
+学習備忘録として作成過程をQiita記事にしました。
 
 [Go(JWT認証)✖️RiverpodでTodoアプリを作ってみたPart1（Go環境構築 編） - Qiita](https://qiita.com/SK3620/items/18dc5f5194b7efec003e)
 
@@ -15,7 +21,3 @@ Go＆Riverpod初心者が作る Go ✖️ Flutter（Riverpod）を使用した�
 [Go(JWT認証)✖️RiverpodでTodoアプリを作ってみたPart4（Flutterロジック実装① 編） - Qiita](https://qiita.com/SK3620/items/9b68ceb3212dbcd5c2dc)
 
 [Go(JWT認証)✖️RiverpodでTodoアプリを作ってみたPart5（Flutterロジック実装② 編） - Qiita](https://qiita.com/SK3620/items/c7433afcdc1b6c14903b)
-
-## 備考
-
-最近流行りのGo言語と、需要が伸び続け、モバイルエンジニアを目指す私としては切っても切り離せないFlutter（Riverpod）。業務でFlutterを扱っていましたが、「setState()」ベースなアプリでした。今回は、Go言語とRiverpodの勉強としてまずは、ToDoアプリを作成してみました。
