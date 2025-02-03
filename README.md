@@ -5,7 +5,7 @@ Go＆Riverpod初心者が作る Go ✖️ Flutter（Riverpod）を使用した�
 モバイル（Flutter）側のコードはこちら⬇︎<br>
 https://github.com/SK3620/go-gin-gorm-riverpod-todo-app#:~:text=Repository%20files%20navigation-,README,-go%2Dgin%2Dgorm
 
-## 開発背景
+## 学習背景
 
 前職では、モバイル側とバックエンド側が連携したシステムの開発が多く、バックエンドにも少しでも知見のあるモバイルエンジニアはチーム全体の課題解決力を強化できることを学びました。また、モバイルエンジニアとしてのキャリアを積み上げていく過程において、Flutterは切っても切り離せない存在になってきていると感じました。
 
