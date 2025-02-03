@@ -1,6 +1,9 @@
-## go-gin-gorm-riverpod-todo-app
+## go-gin-gorm-riverpod-todo-app-backend （Golang）
 
 Go＆Riverpod初心者が作る Go ✖️ Flutter（Riverpod）を使用した簡易的なToDoアプリです。（JWT認証あり）
+
+モバイル（Flutter）側のコードはこちら⬇︎<br>
+https://github.com/SK3620/go-gin-gorm-riverpod-todo-app#:~:text=Repository%20files%20navigation-,README,-go%2Dgin%2Dgorm
 
 ## 開発背景
 
